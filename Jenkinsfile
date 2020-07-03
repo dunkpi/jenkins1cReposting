@@ -47,9 +47,9 @@ pipeline {
                         for (i = 0;  i < infobasesList.size(); i++) {
                             infobase = infobasesList[i]
                             // 1. Запускаем обработку перепроведения 1С 8
-                            repost8Tasks["repost8Tasks_${infobase}"] = repost8Tasks(server1c, port1c, infobase, user, passw, startDate, endDate, backupDir)
+                            repost8Tasks["repost8Tasks_${infobase}"] = repost8Tasks(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
                         }
-                        // parallel repost8Tasks
+                        parallel repost8Tasks
                     }
                 }
             }
@@ -64,12 +64,12 @@ pipeline {
     }
 }
 
-def repost8Task(server1c, port1c, infobase, user, passw, startDate, endDate, backupDir) {
+def repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir) {
     return {
         stage("Перепроведение 1С 8 ${infobase}") {
             timestamps {
                 def projectHelpers = new ProjectHelpers()
-                projectHelpers.repost8Task(server1c, port1c, infobase, user, passw, startDate, endDate, backupDir)
+                projectHelpers.repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
             }
         }
     }
