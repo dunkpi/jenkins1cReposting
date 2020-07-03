@@ -14,8 +14,8 @@ pipeline {
         string(defaultValue: "${env.infobases}", description: 'Список баз для обновления через запятую. Например c83_ack,c83_ato', name: 'infobases')
         string(defaultValue: "${env.user}", description: 'Имя администратора базы 1с Должен быть одинаковым для всех баз', name: 'user')
         string(defaultValue: "${env.passw}", description: 'Пароль администратора базы 1C. Должен быть одинаковым для всех баз', name: 'passw')
-        date(defaultValue: "${env.startDate}", description: 'Дата начала периода', name: 'startDate')
-        date(defaultValue: "${env.endDate}", description: 'Дата окончания периода', name: 'endDate')
+        string(defaultValue: "${env.startDate}", description: 'Дата начала периода', name: 'startDate')
+        string(defaultValue: "${env.endDate}", description: 'Дата окончания периода', name: 'endDate')
         string(defaultValue: "${env.backupDir}", description: 'Путь для сохранения логов 1c', name: 'backupDir')
     }
     agent {
