@@ -5,6 +5,7 @@ import libs.Utils
 def utils = new Utils()
 def projectHelpers = new ProjectHelpers()
 def repost8Tasks = [:]
+def transferTasks = [:]
 
 pipeline {
     parameters {
@@ -45,8 +46,11 @@ pipeline {
                             infobase = infobasesList[i]
                             // 1. Запускаем обработку перепроведения 1С 8
                             repost8Tasks["repost8Task_${infobase}"] = repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
+                            // 2. Запускаем обработку переноса дкоументов сверкой реестров
+                            transferTasks["transferTask${infobase}"] = transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
                         }
                         parallel repost8Tasks
+                        parallel transferTasks
                     }
                 }
             }
@@ -67,6 +71,17 @@ def repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate,
             timestamps {
                 def projectHelpers = new ProjectHelpers()
                 projectHelpers.repost8(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
+            }
+        }
+    }
+}
+
+def transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate) {
+    return {
+        stage("Перенос документов сверкой реестров ${infobase}") {
+            timestamps {
+                def projectHelpers = new ProjectHelpers()
+                projectHelpers.transfer(platform1c, server1c, infobase, user, passw, startDate, endDate)
             }
         }
     }
