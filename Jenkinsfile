@@ -6,6 +6,7 @@ def utils = new Utils()
 def projectHelpers = new ProjectHelpers()
 def repost8Tasks = [:]
 def transferTasks = [:]
+def transferChangedDocsTasks = [:]
 
 pipeline {
     parameters {
@@ -47,10 +48,13 @@ pipeline {
                             // 1. Запускаем обработку перепроведения 1С 8
                             repost8Tasks["repost8Task_${infobase}"] = repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
                             // 2. Запускаем обработку переноса дкоументов сверкой реестров
-                            transferTasks["transferTask${infobase}"] = transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                            transferTasks["transferTask_${infobase}"] = transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                            // 2. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
+                            transferChangedDocsTasks["transferChangedDocsTasks_${infobase}"] = transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
                         }
                         parallel repost8Tasks
                         parallel transferTasks
+                        parallel transferChangedDocsTasks
                     }
                 }
             }
@@ -82,6 +86,17 @@ def transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate
             timestamps {
                 def projectHelpers = new ProjectHelpers()
                 projectHelpers.transfer(platform1c, server1c, infobase, user, passw, startDate, endDate)
+            }
+        }
+    }
+}
+
+def transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate) {
+    return {
+        stage("Перенос документов обработкой ИзмененныеДокументы ${infobase}") {
+            timestamps {
+                def projectHelpers = new ProjectHelpers()
+                projectHelpers.transferChangedDocs(platform1c, server1c, infobase, user, passw, startDate, endDate)
             }
         }
     }
