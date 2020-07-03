@@ -15,6 +15,9 @@ Param (
 try {
     $paramString = $startDate + ',' + $endDate + ',' + $backupDir
     $connectionString ='ENTERPRISE /S' + $server1c + '\' + $infobase + ' /N' + $user + ' /P' + $passw + ' /Execute "tools\repost.epf"'
+    Write-Host 'paramString = ' $paramString
+    Write-Host 'connectionString = ' $connectionString
+    Write-Host 'result = ' $platform1c $connectionString $paramString 
     & $platform1c $connectionString $paramString | Out-Null
 } catch {
     throw $_.Exception.Message
