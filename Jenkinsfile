@@ -33,9 +33,6 @@ pipeline {
                         infobasesList = utils.lineToArray(infobases.toLowerCase())
                         platform1c = "C:\\Program Files (x86)\\1cv8\\" + (platform1c.isEmpty() ? "common\\1cestart.exe" : (platform1c + "\\bin\\1cv8.exe"))
                         server1c = server1c.isEmpty() ? 'localhost' : server1c
-
-                        println("startDate: " + startDate)
-                        println("endDate: " + endDate)
                     }
                 }
             }
@@ -47,7 +44,7 @@ pipeline {
                         for (i = 0;  i < infobasesList.size(); i++) {
                             infobase = infobasesList[i]
                             // 1. Запускаем обработку перепроведения 1С 8
-                            repost8Tasks["repost8Tasks_${infobase}"] = repost8Tasks(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
+                            repost8Tasks["repost8Tasks_${infobase}"] = repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
                         }
                         parallel repost8Tasks
                     }
