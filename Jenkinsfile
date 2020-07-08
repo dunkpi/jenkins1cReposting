@@ -4,16 +4,14 @@ import libs.Utils
 
 def utils = new Utils()
 def projectHelpers = new ProjectHelpers()
-def repost8Tasks = [:]
-def transferTasks = [:]
-def transferChangedDocsTasks = [:]
 
 pipeline {
     parameters {
         string(defaultValue: "${env.jenkinsAgent}", description: 'Нода дженкинса, на которой запускать пайплайн. По умолчанию master', name: 'jenkinsAgent')
         string(defaultValue: "${env.platform1c}", description: 'Версия платформы 1с, например 8.3.14.1694. По умолчанию будет использована последня версия среди установленных', name: 'platform1c')
         string(defaultValue: "${env.server1c}", description: 'Имя сервера 1с, по умолчанию localhost', name: 'server1c')
-        string(defaultValue: "${env.infobases}", description: 'Список баз для обновления через запятую. Например c83_ack,c83_ato', name: 'infobases')
+        string(defaultValue: "${env.infobase}", description: 'Имя информационной базы 1С 8', name: 'infobase')
+        string(defaultValue: "${env.ibPass}", description: 'Путь к каталогу информационной базы 1С 7', name: 'ibPath')
         string(defaultValue: "${env.user}", description: 'Имя администратора базы 1с Должен быть одинаковым для всех баз', name: 'user')
         string(defaultValue: "${env.passw}", description: 'Пароль администратора базы 1C. Должен быть одинаковым для всех баз', name: 'passw')
         string(defaultValue: "${env.startDate}", description: 'Дата начала периода', name: 'startDate')
@@ -32,7 +30,6 @@ pipeline {
             steps {
                 timestamps {
                     script {
-                        infobasesList = utils.lineToArray(infobases.toLowerCase())
                         platform1c = "C:\\Program Files (x86)\\1cv8\\" + (platform1c.isEmpty() ? "common\\1cestart.exe" : (platform1c + "\\bin\\1cv8.exe"))
                         server1c = server1c.isEmpty() ? 'localhost' : server1c
                     }
@@ -43,18 +40,14 @@ pipeline {
             steps {
                 timestamps {
                     script {
-                        for (i = 0;  i < infobasesList.size(); i++) {
-                            infobase = infobasesList[i]
-                            // 1. Запускаем обработку перепроведения 1С 8
-                            repost8Tasks["repost8Task_${infobase}"] = repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
-                            // 2. Запускаем обработку переноса дкоументов сверкой реестров
-                            transferTasks["transferTask_${infobase}"] = transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
-                            // 2. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
-                            transferChangedDocsTasks["transferChangedDocsTasks_${infobase}"] = transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
-                        }
-                        parallel repost8Tasks
-                        parallel transferTasks
-                        parallel transferChangedDocsTasks
+                        // // 1. Запускаем обработку перепроведения 1С 8
+                        // repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
+                        // // 2. Запускаем обработку переноса дкоументов сверкой реестров
+                        // transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                        // // 3. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
+                        // transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                        // // 4. Запускаем обработку перепроведения 1С 8
+                        repost7Task(ibPath, user, passw, startDate, endDate)
                     }
                 }
             }
@@ -97,6 +90,17 @@ def transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDa
             timestamps {
                 def projectHelpers = new ProjectHelpers()
                 projectHelpers.transferChangedDocs(platform1c, server1c, infobase, user, passw, startDate, endDate)
+            }
+        }
+    }
+}
+
+def repost7Task(ibPath, user, passw, startDate, endDate) {
+    return {
+        stage("Перепроведение 1С 7 ${ibPath}") {
+            timestamps {
+                def projectHelpers = new ProjectHelpers()
+                projectHelpers.repost7(ibPath, user, passw, startDate, endDate)
             }
         }
     }
