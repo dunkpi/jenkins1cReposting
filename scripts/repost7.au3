@@ -1,3 +1,5 @@
+#include <Date.au3>
+
 Run("C:\Program Files (x86)\1Cv77\BIN\1cv7s.exe ENTERPRISE /D" & $CmdLine[1] & " /N" & $CmdLine[2] & " /P" & $CmdLine[3])
 
 $titMain = "ITek 2003:"
@@ -21,7 +23,7 @@ SendKey("{TAB}", 11)
 SendKey("{SPACE}")
 SendKey("{TAB}", 6)
 $pathArray = StringSplit($CmdLine[6], "\")
-SendKey($CmdLine[6] & $pathArray[UBound($pathArray) - 2])
+SendKey($CmdLine[6] & $pathArray[UBound($pathArray) - 2] & "_" & StringMid(_NowDate(), 7, 4) & StringMid(_NowDate(), 4, 2) & StringLeft(_NowDate(), 2) & ".txt")
 SendKey("{TAB}")
 SendKey("{SPACE}")
 WinWaitActive($titMain, $titObrabFinished)
