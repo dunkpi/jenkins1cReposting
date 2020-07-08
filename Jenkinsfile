@@ -51,7 +51,7 @@ pipeline {
                         // 3. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
                         transferChangedDocsTasks["transferChangedDocsTasks_${infobase}"] = transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
                         // 4. Запускаем обработку перепроведения 1С 7
-                        repost7Tasks["repost8Task_${infobase}"] = repost7Task(ibPath, user, passw, startDate, endDate)
+                        repost7Tasks["repost7Task_${ibPath}"] = repost7Task(ibPath, user, passw, startDate, endDate)
                         
                         // parallel repost8Tasks
                         // parallel transferTasks
