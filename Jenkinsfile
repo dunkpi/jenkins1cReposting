@@ -4,6 +4,10 @@ import libs.Utils
 
 def utils = new Utils()
 def projectHelpers = new ProjectHelpers()
+def repost8Tasks = [:]
+def transferTasks = [:]
+def transferChangedDocsTasks = [:]
+def repost7Tasks = [:]
 
 pipeline {
     parameters {
@@ -40,14 +44,19 @@ pipeline {
             steps {
                 timestamps {
                     script {
-                        // // 1. Запускаем обработку перепроведения 1С 8
-                        // repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
-                        // // 2. Запускаем обработку переноса дкоументов сверкой реестров
-                        // transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
-                        // // 3. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
-                        // transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
-                        // // 4. Запускаем обработку перепроведения 1С 8
-                        repost7Task(ibPath, user, passw, startDate, endDate)
+                        // 1. Запускаем обработку перепроведения 1С 8
+                        repost8Tasks["repost8Task_${infobase}"] = repost8Task(platform1c, server1c, infobase, user, passw, startDate, endDate, backupDir)
+                        // 2. Запускаем обработку переноса дкоументов сверкой реестров
+                        transferTasks["transferTask_${infobase}"] = transferTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                        // 3. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
+                        transferChangedDocsTasks["transferChangedDocsTasks_${infobase}"] = transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
+                        // 4. Запускаем обработку перепроведения 1С 7
+                        repost7Tasks["repost8Task_${infobase}"] = repost7Task(ibPath, user, passw, startDate, endDate)
+                        
+                        parallel repost8Tasks
+                        parallel transferTasks
+                        parallel transferChangedDocsTasks
+                        parallel repost7Tasks
                     }
                 }
             }
