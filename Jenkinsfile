@@ -53,9 +53,9 @@ pipeline {
                         // 4. Запускаем обработку перепроведения 1С 7
                         repost7Tasks["repost8Task_${infobase}"] = repost7Task(ibPath, user, passw, startDate, endDate)
                         
-                        parallel repost8Tasks
-                        parallel transferTasks
-                        parallel transferChangedDocsTasks
+                        // parallel repost8Tasks
+                        // parallel transferTasks
+                        // parallel transferChangedDocsTasks
                         parallel repost7Tasks
                     }
                 }
