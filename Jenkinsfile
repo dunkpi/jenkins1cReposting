@@ -51,7 +51,7 @@ pipeline {
                         // 3. Запускаем обработку переноса дкоументов обработкой ИзмененныеДокументы
                         transferChangedDocsTasks["transferChangedDocsTasks_${infobase}"] = transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDate, endDate)
                         // 4. Запускаем обработку перепроведения 1С 7
-                        repost7Tasks["repost7Task_${ibPath}"] = repost7Task(ibPath, user, passw, startDate, endDate)
+                        repost7Tasks["repost7Task_${ibPath}"] = repost7Task(ibPath, user, passw, startDate, endDate, backupDir)
                         
                         // parallel repost8Tasks
                         // parallel transferTasks
@@ -104,12 +104,12 @@ def transferChangedDocsTask(platform1c, server1c, infobase, user, passw, startDa
     }
 }
 
-def repost7Task(ibPath, user, passw, startDate, endDate) {
+def repost7Task(ibPath, user, passw, startDate, endDate, backupDir) {
     return {
         stage("Перепроведение 1С 7 ${ibPath}") {
             timestamps {
                 def projectHelpers = new ProjectHelpers()
-                projectHelpers.repost7(ibPath, user, passw, startDate, endDate)
+                projectHelpers.repost7(ibPath, user, passw, startDate, endDate, backupDir)
             }
         }
     }
